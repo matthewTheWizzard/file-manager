@@ -1,0 +1,23 @@
+{
+  "name": "file-manager",
+  "version": "1.0.0",
+  "description": "This repository is the part of nodejs-assignments https://github.com/AlreadyBored/nodejs-assignments/blob/main/assignments/file-manager/assignment.md",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewTheWizzard/file-manager"
+  },
+  "keywords": [
+    "nodejs",
+    "file-manager",
+    "matthewTheWizzard"
+  ],
+  "author": "matthewTheWizzard",
+  "license": "ISC"
+}
