@@ -1,4 +1,3 @@
-export const USERNAME_ARG = '--username';
 
 export const FS_COMMANDS = {
     cat: 'cat',

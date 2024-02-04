@@ -1,13 +1,15 @@
+import { RED, GREEN, BLUE, RESET } from "./constants/colors.js"
+
 export class PrintService {
-    printHelloMesage(username) {
-        console.log(`Welcome to the File Manager, ${username}!`)
+    error(message) {
+        console.log(RED + message + RESET)
     }
 
-    printGoodbyeMessage(username) {
-        console.log(`Thank you for using File Manager, ${username}, goodbye!`)
+    info(message) {
+        console.log(GREEN + message + RESET)
     }
 
-    printDirectoryMessage(dir) {
-        console.log(`You are currently in path_to_working_directory ${dir}`)
+    success(message) {
+        console.log(BLUE + message + RESET)
     }
 }

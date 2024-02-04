@@ -1,25 +1,31 @@
-import { USERNAME_ARG } from "../constants/index.js";
+import { ARGS } from "./constants/index.js";
 import { validateName } from "../validate/index.js";
+import { validateArg } from "./utils/validate.js";
 
-/**
- * Represents a CLI Service.
- */
+
 export class CLIService {
     #args = process.argv.slice(2);
     #username = '';
 
     constructor() {
-        this.#username = validateName(this.getArgValue(USERNAME_ARG));
+        this.#username = validateName(this.getArgValue(ARGS.USERNAME));
      }
 
     /**
      * Get the value of a command line argument by name.
      * @param {string} name - The name of the argument.
-     * @returns {string|null} - The value of the argument, or null if not found.
+     * @returns {string} - The value of the argument, or null if not found.
      */
     getArgValue(name) {
-        const argIndex = this.#args.indexOf(name);
-        return argIndex !== -1 ? this.#args[argIndex + 1] : null;
+        const arg = this.#args.find(arg => arg.includes(name));
+
+        const isArgValid = validateArg(arg);
+
+        if (!isArgValid) {
+            return null;
+        }
+            
+        return arg.split('=')[1];
     }
 
     /**

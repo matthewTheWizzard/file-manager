@@ -1,12 +1,15 @@
 import { ZLIB_COMMANDS } from "../constants/index.js";
 import PathService from '../path/index.js'
-import zlib from 'node:zlib';
+import { PrintService } from "../print/index.js";
 import { pipeline }from 'node:stream';
 import { createReadStream, createWriteStream } from 'node:fs';
+import { FS_OPERATION_FAILED } from "../constants/messages.js";
 import path from 'path';
+import zlib from 'node:zlib';
 
 export class ZlibService {
     #pathService = PathService;
+    #printService = new PrintService
 
     async [ZLIB_COMMANDS.compress](source, destination){
         const sourcePath = path.resolve(this.#pathService.currentDirectory, source);
@@ -20,8 +23,7 @@ export class ZlibService {
         pipeline(readable, gzip, wrirable, (err) => {
 
           if (err) {
-            console.error('An error occurred:', err);
-            process.exitCode = 1;
+            this.#printService.error(FS_OPERATION_FAILED);
           }
         });
     };
@@ -39,8 +41,7 @@ export class ZlibService {
         pipeline(readable, gunzip, wrirable, (err) => {
 
           if (err) {
-            console.error('An error occurred:', err);
-            process.exitCode = 1;
+            this.#printService.error(FS_OPERATION_FAILED);
           }
         });
     };

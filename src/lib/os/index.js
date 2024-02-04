@@ -2,14 +2,18 @@ import os from 'os';
 import { validateArg } from './utils/index.js';
 import { METHODS } from './constants/index.js';
 import { OS_COMMANDS } from '../constants/index.js';
+import { PrintService } from '../print/index.js';
+import { INVALID_ARGUMENT } from '../constants/messages.js';
 
 export class OSService {
+    
+    #printService = new PrintService();
 
     [OS_COMMANDS.os](arg) {
         const isArgValid = validateArg(arg);
 
         if (!isArgValid) {
-            console.log(`Invalid argument: ${arg}`);
+            this.#printService.error(INVALID_ARGUMENT);
             return;
         }
 
@@ -19,39 +23,30 @@ export class OSService {
     }
 
     [METHODS['--EOL']]() {
-        console.log("\n**********\n")
-        console.log(`End-Of-Line (EOL): ${os.EOL}`);
+        this.#printService.info(`End-Of-Line (EOL): ${os.EOL}`);
     }
 
     [METHODS['--cpus']]() {
         const cpus = os.cpus();
-        console.log("\n**********\n")
-        console.log(`\n Number of CPUs: ${cpus.length} \n`);
+        const MHZ_TO_GHZ = (speed) => (speed / 1000).toFixed(2) + ' GHz';
 
-        console.log("\n**********\n")
+        this.#printService.info(`\n Number of CPUs: ${cpus.length}`);
         cpus.forEach((cpu, index) => {
-            console.log(`CPU ${index + 1}:`);
-            console.log(`Model: ${cpu.model}`);
-            console.log(`Speed: (${(cpu.speed / 1000).toFixed(2)} GHz)`);
+            this.#printService.info(`CPU ${index + 1}:`);
+            this.#printService.info(`Model: ${cpu.model}`);
+            this.#printService.info(`Speed: ${MHZ_TO_GHZ(spu.speed)}`);
         });
-        console.log("\n**********\n")
     }
 
     [METHODS['--homedir']]() {
-        console.log("\n**********\n")
-        console.log(`Home Directory: ${os.homedir()}`);
-        console.log("\n**********\n")
+        this.#printService.info(`Home Directory: ${os.homedir()}`);
     }
 
     [METHODS['--username']]() {
-        console.log("\n**********\n")
-        console.log(`Current System User Name: ${os.userInfo().username}`);
-        console.log("\n**********\n")
+        this.#printService.info(`Current System User Name: ${os.userInfo().username}`);
     }
 
     [METHODS['--architecture']]() {
-        console.log("\n**********\n")
-        console.log(`Node.js Binary Architecture: ${process.arch}`);
-        console.log("\n**********\n")
+        this.#printService.info(`Node.js Binary Architecture: ${process.arch}`);
     }
 }

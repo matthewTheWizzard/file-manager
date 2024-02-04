@@ -3,9 +3,12 @@ import PathService from '../path/index.js'
 import { createHash } from 'node:crypto';
 import fs from "node:fs";
 import path from 'path'
+import { PrintService } from "../print/index.js";
+import { fileDoesNotExistMessage } from "../constants/messages.js";
 
 export class CryptoService {
     #pathService = PathService;
+    #printService = new PrintService();
 
     async [CRYPTO_COMMANDS.hash](source) {
         const pathname = path.resolve(this.#pathService.currentDirectory, source);
@@ -13,7 +16,7 @@ export class CryptoService {
         const fileExists = fs.existsSync(pathname);
 
         if (!fileExists) {
-            console.log(`File does not exist: ${pathname}`);
+            this.#printService.error(fileDoesNotExistMessage(pathname))
             return;
         }
         
@@ -30,7 +33,7 @@ export class CryptoService {
         });
 
         readStream.on('end', () => {
-            console.log(hash.digest('hex'));
+          this.#printService.info(hash.digest('hex'));
 
             readStream.close();
         });

@@ -1,11 +1,19 @@
 import fs from 'fs'
 import PathService from '../path/index.js'
+import { PrintService } from '../print/index.js'
 import path from 'path'
 import fsPromises from 'fs/promises'
 import { FS_COMMANDS } from '../constants/index.js'
+import { 
+    notAFileMessage, 
+    FS_OPERATION_FAILED, 
+    fileAlreadyExistsMessage,
+    fileDoesNotExistMessage
+} from '../constants/messages.js'
 
 export class FSService {
     #pathService = PathService;
+    #printService = new PrintService()
 
     async [FS_COMMANDS.cat](filename) {
         try {
@@ -13,18 +21,19 @@ export class FSService {
             const isFile = fs.lstatSync(filePath).isFile();
 
             if (!isFile) {
-                // TODO: сервис обработке ошибок. В данном случае консоль
-                console.log(`${filename} is not a file!`);
+                this.#printService.error(notAFileMessage(filename))
                 return
             }
 
             const readStream = fs.createReadStream(filePath);
 
             readStream.pipe(process.stdout);
-        } catch (error) {
 
-            // TODO: сервис обработке ошибок. В данном случае консоль
-            console.error(`FS operation failed: ${error.message}`);
+            readStream.on('end', () => {
+                console.log('After reading the file, the stream has ended.')
+            });
+        } catch (error) {
+            this.#printService.error(FS_OPERATION_FAILED);
         }
     }
 
@@ -34,9 +43,8 @@ export class FSService {
         try {
             await fsPromises.writeFile(filePath, '', { flag: 'ax' });
         } catch (error) {
-            // TODO: сервис обработке ошибок. В данном случае консоль
-            console.error(`FS operation failed`);
-            console.log(`File ${filename} already exists!`);
+            this.#printService.error(FS_OPERATION_FAILED);
+            this.#printService.error(fileAlreadyExistsMessage(filename))
         }
     }
 
@@ -46,14 +54,14 @@ export class FSService {
         const fileExists = fs.existsSync(oldPath);
 
         if (!fileExists) {
-            console.log(`File ${sourcePath} does not exist!`);
+            this.#printService.error(fileDoesNotExistMessage(filename))
             return;
         }
     
         try {
             await fsPromises.rename(oldPath, newPath);
         } catch (error) {
-            console.log('FS operation failed')
+            this.#printService.error(FS_OPERATION_FAILED);
         }
     }
 
@@ -64,7 +72,7 @@ export class FSService {
         const fileExists = fs.existsSync(sourceFilePath);
 
         if (!fileExists) {
-            console.log(`File ${source} does not exist!`);
+            this.#printService.error(fileDoesNotExistMessage(filename))
             return;
         }
 
@@ -76,7 +84,7 @@ export class FSService {
 
             readStream.pipe(writeStream);
         } catch (error) {
-            console.error('FS operation failed');
+            this.#printService.error(FS_OPERATION_FAILED);
         }
     }
 
@@ -86,14 +94,14 @@ export class FSService {
         const fileExists = fs.existsSync(sourcePathname);
 
         if (!fileExists) {
-            console.log(`File ${source} does not exist!`);
+            this.#printService.error(fileDoesNotExistMessage(filename))
             return;
         }
 
         try {
             await fs.promises.rm(sourcePathname);
         } catch (error) {
-            console.error(`Error deleting file "${source}`);
+            this.#printService.error(FS_OPERATION_FAILED);
         }
     }
 

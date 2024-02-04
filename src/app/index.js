@@ -6,6 +6,12 @@ import {
     OS_COMMANDS,
     CRYPTO_COMMANDS
 } from "../lib/constants/index.js";
+import { 
+    dirMessage,
+    helloMessage,
+    goodbyeMessage,
+    invalidInputMessage
+} from '../lib/constants/messages.js';
 import { FSService } from '../lib/fs/index.js';
 import  PathService from '../lib/path/index.js'
 import { OSService } from '../lib/os/index.js';
@@ -31,22 +37,26 @@ export class App {
             prompt: '> '
         });
 
-        this.#printService.printHelloMesage(this.#cliService.username);
+        this.#printService.info(helloMessage(this.#cliService.username));
     }
 
     startApp() { 
         this.init();
 
         this.rl.prompt();
+
         this.rl.on('line', async (input) => {
             await this.handleInput(input);
     
-            this.#printService.printDirectoryMessage(this.#pathService.currentDirectory);
+            setTimeout(() => {
+                this.#printService.info(dirMessage(this.#pathService.currentDirectory));
+            }, 500)
+
             this.rl.prompt();
 
         }).on('close', () => {
-            this.#printService.printGoodbyeMessage(this.#cliService.username);
-    
+            
+            this.#printService.info(goodbyeMessage(this.#cliService.username));
             process.exit(0);
         });
     }
@@ -57,14 +67,14 @@ export class App {
         const isCommandValid = validateCommand(command);
 
         if (!isCommandValid) {
-            console.log(`Invalid input: ${command}`);
+            this.#printService.error(invalidInputMessage(command));
             return;
         }
     
         await this.getService(command)[command](...args);
-     }
+    }
 
-     getService(command) {
+    getService(command) {
         if (FS_COMMANDS[command]) {
             return this.#fsService;
         }

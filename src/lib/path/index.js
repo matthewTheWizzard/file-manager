@@ -4,9 +4,12 @@ import fs from 'fs';
 import fsPromises from 'fs/promises';
 import { sortAlphabetically } from './utils/sort.js';
 import { PATH_COMMANDS } from '../constants/index.js';
+import { PrintService } from '../print/index.js';
+import { FS_OPERATION_FAILED, directoryDoesNotExistMessage, notADirectoryMessage } from '../constants/messages.js';
 
 class PathService {
     #currentDirectory = os.homedir();
+    #printService = new PrintService()
 
     setDirectory(dir) {
         this.#currentDirectory = dir;
@@ -30,13 +33,12 @@ class PathService {
         const isDirectory = fs.statSync(newDirectory).isDirectory();
 
         if (!isDirectory) {
-            console.log(`${dir} is not a directory!`);
+            this.#printService.error(notADirectoryMessage(dir))
             return;
         }
 
         if (!fs.existsSync(newDirectory)) {
-            // TODO: сервис обработке ошибок. В данном случае консоль
-            console.log(`The directory ${dir} does not exist!`);
+            this.#printService.error(directoryDoesNotExistMessage(dir))
             return;
         }
 
@@ -63,7 +65,7 @@ class PathService {
 
             console.table(sortedFiles)
         } catch (error) {
-            console.error(`Error listing directory: ${error.message}`);
+            this.#printService.error(FS_OPERATION_FAILED)
         }
     }
 }
