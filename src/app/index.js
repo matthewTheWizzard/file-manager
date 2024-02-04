@@ -37,11 +37,13 @@ export class App {
     startApp() { 
         this.init();
 
-        this.rl.on('line', (input) => {
-            this.rl.prompt();
-            this.handleInput(input);
-
+        this.rl.prompt();
+        this.rl.on('line', async (input) => {
+            await this.handleInput(input);
+    
             this.#printService.printDirectoryMessage(this.#pathService.currentDirectory);
+            this.rl.prompt();
+
         }).on('close', () => {
             this.#printService.printGoodbyeMessage(this.#cliService.username);
     
@@ -49,7 +51,7 @@ export class App {
         });
     }
 
-    handleInput(input) {
+    async handleInput(input) {
         const { command, args } = this.#cliService.getInputCommand(input);
 
         const isCommandValid = validateCommand(command);
@@ -57,27 +59,26 @@ export class App {
         if (!isCommandValid) {
             console.log(`Invalid input: ${command}`);
             return;
-         }
-
-        switch (command) {
-            case PATH_COMMANDS[command]:
-                this.#pathService[PATH_COMMANDS[command]](...args);
-                break;
-            case FS_COMMANDS[command]:
-                this.#fsService[FS_COMMANDS[command]](...args);
-                break;
-            case OS_COMMANDS[command]:
-                this.#osService[OS_COMMANDS[command]](...args);
-                break;
-            case CRYPTO_COMMANDS[command]:
-                this.#cryptoService[CRYPTO_COMMANDS[command]](...args);
-                break;
-            case ZLIB_COMMANDS[command]:
-                this.#zlibService[ZLIB_COMMANDS[command]](...args);
-                break;
-            default:
-                console.log(`Command not found: ${command}`);
-                break;
         }
+    
+        await this.getService(command)[command](...args);
      }
+
+     getService(command) {
+        if (FS_COMMANDS[command]) {
+            return this.#fsService;
+        }
+        if (PATH_COMMANDS[command]) {
+            return this.#pathService;
+        }
+        if (OS_COMMANDS[command]) {
+            return this.#osService;
+        }
+        if (CRYPTO_COMMANDS[command]) {
+            return this.#cryptoService;
+        }
+        if (ZLIB_COMMANDS[command]) {
+            return this.#zlibService;
+        }
+    }
 }

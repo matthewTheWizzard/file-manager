@@ -9,6 +9,7 @@ export const FS_COMMANDS = {
     rm: 'rm',
 }
 
+
 export const PATH_COMMANDS = {
     up: 'up',
     cd: 'cd',
