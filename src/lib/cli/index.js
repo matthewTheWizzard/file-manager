@@ -1,8 +1,16 @@
+import { USERNAME_ARG } from "../constants/index.js";
+import { validateName } from "../validate/index.js";
+
 /**
  * Represents a CLI Service.
  */
-class CLIService {
+export class CLIService {
     #args = process.argv.slice(2);
+    #username = '';
+
+    constructor() {
+        this.#username = validateName(this.getArgValue(USERNAME_ARG));
+     }
 
     /**
      * Get the value of a command line argument by name.
@@ -27,6 +35,8 @@ class CLIService {
             args
         }
     }
-}
 
-export default new CLIService();
+    get username() {
+        return this.#username;
+    }
+}
