@@ -7,6 +7,7 @@ import { ALL_COMMANDS,
 } from "../lib/constants/index.js";
 import { FSService } from '../lib/fs/index.js';
 import  PathService from '../lib/path/index.js'
+import { OSService } from '../lib/os/index.js';
 import { PrintService } from "../lib/print/index.js";
 import { validateCommand } from "../lib/validate/index.js";
 import readline from 'readline';
@@ -16,6 +17,7 @@ export class App {
     #cliService = new CLIService();
     #printService = new PrintService();
     #fsService = new FSService();
+    #osService = new OSService();
 
     init() {
         this.rl = readline.createInterface({
@@ -58,6 +60,9 @@ export class App {
                 break;
             case FS_COMMANDS[command]:
                 this.#fsService[FS_COMMANDS[command]](...args);
+                break;
+            case OS_COMMANDS[command]:
+                this.#osService[OS_COMMANDS[command]](...args);
                 break;
         }
      }
