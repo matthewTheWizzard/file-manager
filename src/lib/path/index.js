@@ -3,8 +3,9 @@ import path from 'path';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import { sortAlphabetically } from './utils/sort.js';
+import { PATH_COMMANDS } from '../constants/index.js';
 
-export class PathService {
+class PathService {
     #currentDirectory = os.homedir();
 
     setDirectory(dir) {
@@ -15,7 +16,7 @@ export class PathService {
         return this.#currentDirectory;
     }
 
-    up() {
+    [PATH_COMMANDS.up]() {
         const upDirectory = path.dirname(this.#currentDirectory);
 
         if (upDirectory !== this.#currentDirectory) {
@@ -23,8 +24,15 @@ export class PathService {
         }
     }
 
-    cd(dir) {
+    [PATH_COMMANDS.cd](dir) {
         const newDirectory = path.resolve(this.#currentDirectory, dir);
+
+        const isDirectory = fs.statSync(newDirectory).isDirectory();
+
+        if (!isDirectory) {
+            console.log(`${dir} is not a directory!`);
+            return;
+        }
 
         if (!fs.existsSync(newDirectory)) {
             // TODO: сервис обработке ошибок. В данном случае консоль
@@ -35,7 +43,7 @@ export class PathService {
         this.#currentDirectory = newDirectory;
     }
 
-    async ls() {
+    async [PATH_COMMANDS.ls]() {
         try {
             const content = await fsPromises.readdir(this.currentDirectory);
 
@@ -59,3 +67,5 @@ export class PathService {
         }
     }
 }
+
+export default new PathService();

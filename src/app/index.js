@@ -1,14 +1,21 @@
 import { CLIService } from '../lib/cli/index.js';
-import { COMMANDS } from "../lib/constants/index.js";
-import  { PathService } from '../lib/path/index.js'
+import { ALL_COMMANDS, 
+    COMPRESS_COMMANDS,
+    PATH_COMMANDS,
+    FS_COMMANDS, 
+    OS_COMMANDS 
+} from "../lib/constants/index.js";
+import { FSService } from '../lib/fs/index.js';
+import  PathService from '../lib/path/index.js'
 import { PrintService } from "../lib/print/index.js";
 import { validateCommand } from "../lib/validate/index.js";
 import readline from 'readline';
 
 export class App {
-    #pathService = new PathService();
+    #pathService = PathService;
     #cliService = new CLIService();
     #printService = new PrintService();
+    #fsService = new FSService();
 
     init() {
         this.rl = readline.createInterface({
@@ -46,14 +53,11 @@ export class App {
          }
 
         switch (command) {
-            case COMMANDS.UP:
-                this.#pathService.up();
+            case PATH_COMMANDS[command]:
+                this.#pathService[PATH_COMMANDS[command]](...args);
                 break;
-            case COMMANDS.CD:
-                this.#pathService.cd(args[0]);
-                break;
-            case COMMANDS.LS:
-                this.#pathService.ls();
+            case FS_COMMANDS[command]:
+                this.#fsService[FS_COMMANDS[command]](...args);
                 break;
         }
      }
