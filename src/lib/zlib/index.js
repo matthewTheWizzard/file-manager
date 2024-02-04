@@ -1,6 +1,6 @@
 import { ZLIB_COMMANDS } from "../constants/index.js";
 import PathService from '../path/index.js'
-import { createGzip, createGunzip } from 'node:zlib';
+import zlib from 'node:zlib';
 import { pipeline }from 'node:stream';
 import { createReadStream, createWriteStream } from 'node:fs';
 import path from 'path';
@@ -12,7 +12,7 @@ export class ZlibService {
         const sourcePath = path.resolve(this.#pathService.currentDirectory, source);
         const destinationPath = path.resolve(this.#pathService.currentDirectory, destination);
 
-        const gzip = createGzip();
+        const gzip = zlib.createBrotliCompress();
     
         const readable = createReadStream(sourcePath);
         const wrirable = createWriteStream(destinationPath);
@@ -31,7 +31,7 @@ export class ZlibService {
         const sourcePath = path.resolve(this.#pathService.currentDirectory, source);
         const destinationPath = path.resolve(this.#pathService.currentDirectory, destination);
 
-        const gunzip = createGunzip();
+        const gunzip = zlib.createBrotliDecompress();
     
         const readable = createReadStream(sourcePath);
         const wrirable = createWriteStream(destinationPath);
