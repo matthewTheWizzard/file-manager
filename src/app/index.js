@@ -1,6 +1,6 @@
 import { CLIService } from '../lib/cli/index.js';
-import { ALL_COMMANDS, 
-    COMPRESS_COMMANDS,
+import {
+    ZLIB_COMMANDS,
     PATH_COMMANDS,
     FS_COMMANDS, 
     OS_COMMANDS,
@@ -13,6 +13,7 @@ import { PrintService } from "../lib/print/index.js";
 import { validateCommand } from "../lib/validate/index.js";
 import readline from 'readline';
 import { CryptoService } from '../lib/crypto/index.js';
+import { ZlibService } from '../lib/zlib/index.js';
 
 export class App {
     #pathService = PathService;
@@ -20,7 +21,8 @@ export class App {
     #printService = new PrintService();
     #fsService = new FSService();
     #osService = new OSService();
-    #cryptoService = new CryptoService
+    #cryptoService = new CryptoService()
+    #zlibService = new ZlibService();
 
     init() {
         this.rl = readline.createInterface({
@@ -69,6 +71,12 @@ export class App {
                 break;
             case CRYPTO_COMMANDS[command]:
                 this.#cryptoService[CRYPTO_COMMANDS[command]](...args);
+                break;
+            case ZLIB_COMMANDS[command]:
+                this.#zlibService[ZLIB_COMMANDS[command]](...args);
+                break;
+            default:
+                console.log(`Command not found: ${command}`);
                 break;
         }
      }

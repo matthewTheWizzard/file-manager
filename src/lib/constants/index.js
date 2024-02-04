@@ -19,7 +19,7 @@ export const OS_COMMANDS = {
     os: 'os',
 }
 
-export const COMPRESS_COMMANDS = {
+export const ZLIB_COMMANDS = {
     compress: 'compress',
     decompress: 'decompress',
 }
@@ -32,7 +32,7 @@ export const ALL_COMMANDS = {
     ...FS_COMMANDS,
     ...PATH_COMMANDS,
     ...OS_COMMANDS,
-    ...COMPRESS_COMMANDS,
+    ...ZLIB_COMMANDS,
     ...CRYPTO_COMMANDS,
 }
 
