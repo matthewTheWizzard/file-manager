@@ -3,7 +3,8 @@ import { ALL_COMMANDS,
     COMPRESS_COMMANDS,
     PATH_COMMANDS,
     FS_COMMANDS, 
-    OS_COMMANDS 
+    OS_COMMANDS,
+    CRYPTO_COMMANDS
 } from "../lib/constants/index.js";
 import { FSService } from '../lib/fs/index.js';
 import  PathService from '../lib/path/index.js'
@@ -11,6 +12,7 @@ import { OSService } from '../lib/os/index.js';
 import { PrintService } from "../lib/print/index.js";
 import { validateCommand } from "../lib/validate/index.js";
 import readline from 'readline';
+import { CryptoService } from '../lib/crypto/index.js';
 
 export class App {
     #pathService = PathService;
@@ -18,6 +20,7 @@ export class App {
     #printService = new PrintService();
     #fsService = new FSService();
     #osService = new OSService();
+    #cryptoService = new CryptoService
 
     init() {
         this.rl = readline.createInterface({
@@ -63,6 +66,9 @@ export class App {
                 break;
             case OS_COMMANDS[command]:
                 this.#osService[OS_COMMANDS[command]](...args);
+                break;
+            case CRYPTO_COMMANDS[command]:
+                this.#cryptoService[CRYPTO_COMMANDS[command]](...args);
                 break;
         }
      }

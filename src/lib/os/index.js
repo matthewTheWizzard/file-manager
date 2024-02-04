@@ -1,10 +1,11 @@
 import os from 'os';
 import { validateArg } from './utils/index.js';
 import { METHODS } from './constants/index.js';
+import { OS_COMMANDS } from '../constants/index.js';
 
 export class OSService {
 
-    os(arg) {
+    [OS_COMMANDS.os](arg) {
         const isArgValid = validateArg(arg);
 
         if (!isArgValid) {

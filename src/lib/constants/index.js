@@ -24,7 +24,7 @@ export const COMPRESS_COMMANDS = {
     decompress: 'decompress',
 }
 
-export const HASH_COMMANDS = {
+export const CRYPTO_COMMANDS = {
     hash: 'hash',
 }
 
@@ -33,7 +33,7 @@ export const ALL_COMMANDS = {
     ...PATH_COMMANDS,
     ...OS_COMMANDS,
     ...COMPRESS_COMMANDS,
-    ...HASH_COMMANDS,
+    ...CRYPTO_COMMANDS,
 }
 
 export const VALID_COMMANDS = Object.values(ALL_COMMANDS);
