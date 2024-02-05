@@ -1,0 +1,1 @@
+export const VALID_HASH_COMMAND = 'Valid hash command is: hash <path_to_file>'

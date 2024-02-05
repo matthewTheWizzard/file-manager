@@ -1,0 +1,2 @@
+export const VALID_COMPRESS_COMMAND = 'Valid compress command is: compress <path_to_file> <path_to_destination>'
+export const VALID_DECOMPRESS_COMMAND = 'Valid decompress command is: decompress <path_to_file> <path_to_destination>'
