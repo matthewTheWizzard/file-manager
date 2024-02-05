@@ -10,7 +10,9 @@ import {
     dirMessage,
     helloMessage,
     goodbyeMessage,
-    invalidInputMessage
+    invalidInputMessage,
+    VALID_COMMANDS_MESSAGE,
+    EXIT_MESSAGE
 } from '../lib/constants/messages.js';
 import { FSService } from '../lib/fs/index.js';
 import  PathService from '../lib/path/index.js'
@@ -46,18 +48,22 @@ export class App {
         this.rl.prompt();
 
         this.rl.on('line', async (input) => {
+            const exit = input.trim() === '.exit';
+
+            if (exit) {
+                this.rl.close();
+                return;
+            }
+
             await this.handleInput(input);
     
-            setTimeout(() => {
-                this.#printService.info(dirMessage(this.#pathService.currentDirectory));
-            }, 500)
+            this.#printService.dir(dirMessage(this.#pathService.currentDirectory));
 
             this.rl.prompt();
 
         }).on('close', () => {
-            
             this.#printService.info(goodbyeMessage(this.#cliService.username));
-            process.exit(0);
+
         });
     }
 
@@ -68,6 +74,8 @@ export class App {
 
         if (!isCommandValid) {
             this.#printService.error(invalidInputMessage(command));
+            this.#printService.infoError(VALID_COMMANDS_MESSAGE)
+            this.#printService.infoError(EXIT_MESSAGE)
             return;
         }
     

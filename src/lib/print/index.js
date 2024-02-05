@@ -1,4 +1,4 @@
-import { RED, GREEN, BLUE, RESET } from "./constants/colors.js"
+import { RED, GREEN, BLUE, RESET, BLUE_BG, CYAN_BG } from "./constants/colors.js"
 
 export class PrintService {
     error(message) {
@@ -11,5 +11,13 @@ export class PrintService {
 
     success(message) {
         console.log(BLUE + message + RESET)
+    }
+
+    dir(message) {
+        console.log(BLUE_BG + message + RESET)
+    }
+
+    infoError(message) {
+        console.log(CYAN_BG + message + RESET)
     }
 }

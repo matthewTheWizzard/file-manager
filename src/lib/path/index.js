@@ -5,7 +5,7 @@ import fsPromises from 'fs/promises';
 import { sortAlphabetically } from './utils/sort.js';
 import { PATH_COMMANDS } from '../constants/index.js';
 import { PrintService } from '../print/index.js';
-import { FS_OPERATION_FAILED, directoryDoesNotExistMessage, notADirectoryMessage } from '../constants/messages.js';
+import { CHECK_DIRECTORIES, FS_OPERATION_FAILED, directoryDoesNotExistMessage, notADirectoryMessage } from '../constants/messages.js';
 
 class PathService {
     #currentDirectory = os.homedir();
@@ -28,17 +28,24 @@ class PathService {
     }
 
     [PATH_COMMANDS.cd](dir) {
+        if(!dir) {
+            this.#printService.error(FS_OPERATION_FAILED)
+            return;
+        }
+
         const newDirectory = path.resolve(this.#currentDirectory, dir);
+
+        if (!fs.existsSync(newDirectory)) {
+            this.#printService.error(directoryDoesNotExistMessage(newDirectory))
+            this.#printService.infoError(CHECK_DIRECTORIES)
+            return;
+        }
 
         const isDirectory = fs.statSync(newDirectory).isDirectory();
 
         if (!isDirectory) {
             this.#printService.error(notADirectoryMessage(dir))
-            return;
-        }
-
-        if (!fs.existsSync(newDirectory)) {
-            this.#printService.error(directoryDoesNotExistMessage(dir))
+            this.#printService.infoError(CHECK_DIRECTORIES)
             return;
         }
 

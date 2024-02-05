@@ -1,16 +1,23 @@
 import { CRYPTO_COMMANDS } from "../constants/index.js";
 import PathService from '../path/index.js'
 import { createHash } from 'node:crypto';
+import { PrintService } from "../print/index.js";
+import { FS_OPERATION_FAILED, fileDoesNotExistMessage } from "../constants/messages.js";
+import { VALID_HASH_COMMAND } from "./constants/messages.js";
 import fs from "node:fs";
 import path from 'path'
-import { PrintService } from "../print/index.js";
-import { fileDoesNotExistMessage } from "../constants/messages.js";
 
 export class CryptoService {
     #pathService = PathService;
     #printService = new PrintService();
 
     async [CRYPTO_COMMANDS.hash](source) {
+        if (!source) {
+            this.#printService.error(FS_OPERATION_FAILED)
+            this.#printService.infoError(VALID_HASH_COMMAND)
+            return;
+        }
+
         const pathname = path.resolve(this.#pathService.currentDirectory, source);
 
         const fileExists = fs.existsSync(pathname);
@@ -32,10 +39,17 @@ export class CryptoService {
           }
         });
 
-        readStream.on('end', () => {
-          this.#printService.info(hash.digest('hex'));
+        const streamEnd = new Promise(resolve => {
+          readStream.on('end', () => {
+              this.#printService.info(`Hash: ${hash.digest('hex')}`);
+              resolve();
+          });
+        });
 
-            readStream.close();
+        await streamEnd;
+
+        readStream.on('error', (error) => {
+            this.#printService.error(FS_OPERATION_FAILED);
         });
     };
 }
